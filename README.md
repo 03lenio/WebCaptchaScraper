@@ -15,7 +15,11 @@
     global captchaCount
     captchaCount += 1
     # here selenium finds the captcha image via its id and then screenshots it
-    driver.find_element_by_id("captchaImage").screenshot("scraped/captcha" + str(captchaCount) + ".png")
+    try:
+        driver.find_element_by_id("captchaImage").screenshot("scraped/captcha" + str(captchaCount) + ".png")
+    except:
+        print("Something went wrong while trying to scrape, retrying...")
+        grabCaptchas()
     print("Successfully grabbed captcha no." + str(captchaCount))
     global grabbed
     grabbed += 1
