@@ -14,12 +14,19 @@ def grabCaptchas():
     if not os.path.exists("scraped"):
         os.mkdir("scraped")
     time.sleep(2)
+    # this will call the global captcha count to count how many captchas you already have
     global captchaCount
     captchaCount += 1
-    driver.find_element_by_id("captchaImage").screenshot("scraped/captcha" + str(captchaCount) + ".png")
+    # here selenium finds the captcha image via its id and then screenshots it
+    try:
+        driver.find_element_by_id("captchaImage").screenshot("scraped/captcha" + str(captchaCount) + ".png")
+    except:
+        print("Something went wrong while trying to scrape, retrying...")
+        grabCaptchas()
     print("Successfully grabbed captcha no." + str(captchaCount))
     global grabbed
     grabbed += 1
+    # this will refresh the site so another captcha can be scraped
     driver.refresh()
 
 
@@ -46,13 +53,14 @@ def main():
         time.sleep(1)
         # ask for captcha count
         captchas = int(input("How many captchas do you want? "))
+        whereToStart = int(input("Where do you want to start counting (standard is zero)? "))
         global driver
         driver = webdriver.Chrome()
         driver.get("https://registrieren.web.de/")
         global grabbed
         grabbed = 0
         global captchaCount
-        captchaCount = 0
+        captchaCount = whereToStart
         # grab captchas x times
         while captchas > grabbed:
             grabCaptchas()
